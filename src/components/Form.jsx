@@ -1,15 +1,24 @@
 import { useState, useEffect } from "react"
 
 const Form = () => {
+  
   const [mascota, setMascota] = useState('');
   const [propietario, setPropietario] = useState('');
   const [email, setEmail] = useState('');
   const [fecha, setFecha] = useState('');
   const [sintomas, setSintomas] = useState('');
 
+  const [error, setError] = useState(false);
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Enviando Formulario');
+
+    if([ mascota, propietario, email, fecha, sintomas ].includes('') ){
+      setError(true);
+      return;
+    }
+
+    setError(false);
   };
 
   return (
@@ -23,6 +32,13 @@ const Form = () => {
       </p>
 
       <form className='bg-white shadow-md rounded-lg py-10 px-5 mb-10' onSubmit={handleSubmit}>
+
+        { error && (
+          <div className="bg-red-600 text-white text-center p-3 uppercase font-bold mb-3 rounded-md">
+            <p>Todos los campos son obligatorios</p>
+            </div>
+        )}
+
         <div className='mb-5'>
           <label htmlFor="mascota" className='block text-grey-700 uppercase font-bold'>Nombre Mascota</label>
           <input id="mascota" className='border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md' type='text' placeholder='Nombre de la Mascota' value={mascota} onChange={ (e) => setMascota(e.target.value)} />
@@ -43,7 +59,9 @@ const Form = () => {
           <label htmlFor="sintomas" className='block text-grey-700 uppercase font-bold'>Síntomas</label>
           <textarea id="sintomas" className='border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md' placeholder='Describe los Síntomas'value={sintomas} onChange={ (e) => setSintomas(e.target.value)}/>
         </div>
+
         <input type="submit" className='bg-indigo-600 w-full p-3 text-white uppercase font-bold hover:bg-indigo-700 cursor-pointer transition-all' value="Agregar Paciente" />
+
       </form>
     </div>
   )
