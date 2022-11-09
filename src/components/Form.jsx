@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import Error from "./Error"
 
-const Form = ({ pacientes, setPacientes, paciente }) => {
+const Form = ({ pacientes, setPacientes, paciente, setPaciente }) => {
 
   const [mascota, setMascota] = useState('')
   const [propietario, setPropietario] = useState('')
@@ -12,7 +12,13 @@ const Form = ({ pacientes, setPacientes, paciente }) => {
   const [error, setError] = useState(false)
 
   useEffect(() => {
-
+    if (Object.keys(paciente).length > 0) {
+      setMascota(paciente.mascota)
+      setPropietario(paciente.propietario)
+      setEmail(paciente.email)
+      setFecha(paciente.fecha)
+      setSintoma(paciente.sintoma)
+    }
   }, [paciente])
 
   const generarId = () => {
@@ -25,6 +31,7 @@ const Form = ({ pacientes, setPacientes, paciente }) => {
 
     e.preventDefault()
 
+    // Validación del formulario
     if ([mascota, propietario, email, fecha, sintoma].includes('')) {
       setError(true)
       return
@@ -38,11 +45,22 @@ const Form = ({ pacientes, setPacientes, paciente }) => {
       propietario,
       email,
       fecha,
-      sintoma,
-      id: generarId()
+      sintoma
     }
 
-    setPacientes([...pacientes, objPaciente])
+    // control para diferenciar entre editar y agregar registro
+    if(paciente.id){
+      // Editar registro
+      objPaciente.id = paciente.id
+      const pacientesActualizados = pacientes.map( pacienteState => pacienteState.id === paciente.id ? objPaciente : pacienteState )
+      setPacientes(pacientesActualizados)
+      //Limpiar State
+      setPaciente({})
+    }else{
+      // Nuevo registro
+      objPaciente.id = generarId()
+      setPacientes([...pacientes, objPaciente])
+    }
 
     // reiniciar formulario
     setMascota('')
@@ -88,7 +106,7 @@ const Form = ({ pacientes, setPacientes, paciente }) => {
           <textarea id="sintomas" className='border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md' placeholder='Describe los Síntomas' value={sintoma} onChange={(e) => setSintoma(e.target.value)} />
         </div>
 
-        <input type="submit" className='bg-indigo-600 w-full p-3 text-white uppercase font-bold hover:bg-indigo-700 cursor-pointer transition-all' value="Agregar Paciente" />
+        <input type="submit" className='bg-indigo-600 w-full p-3 text-white uppercase font-bold hover:bg-indigo-700 cursor-pointer transition-all' value={ paciente.id ? 'Editar Paciente' : 'Agregar Paciente' } />
 
       </form>
     </div>
